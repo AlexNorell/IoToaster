@@ -123,7 +123,8 @@ void run_profile(int profile)
       time(&time_current);
       time_difference = difftime(time_current,time_start);
       current_temp = ktc.readCelsius();
-      if (current_temp >= get_temp_at_time(profile,time_current))
+      target_temp= get_temp_at_time(profile,time_current);
+      if (current_temp >=target_temp)
       {
           digitalWrite(ssr_1,0);
           digitalWrite(ssr_2,0);
