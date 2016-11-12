@@ -4,6 +4,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <MAX6675-library/max6675.h>
+#include <time.h>
 
 const char* ssid = "IoToaster";
 const char* password = "calhacks";
@@ -109,6 +110,36 @@ int get_temp_at_time( int profile, int time)
   {
     double temp_at_time = time_diff * slope + profiles[profile][index-1][1];
     return int(temp_at_time);
+  }
+}
+
+void run_profile(int profile)
+{
+  double current_temp=0;
+  double target_temp=0;
+  time_t time_start;
+  time_t time_current;
+  int time_difference;
+
+  time(&time_start);
+
+  while(target_temp!=-1)
+  {
+      time(&time_current);
+      time_difference = difftime(time_current,time_start);
+      current_temp = ktc.readCelsius();
+      target_temp= get_temp_at_time(profile,time_current);
+      if (current_temp >=target_temp)
+      {
+          digitalWrite(ssr_1,0);
+          digitalWrite(ssr_2,0);
+      }
+      else
+      {
+          digitalWrite(ssr_1,1);
+          digitalWrite(ssr_2,1);
+      }
+      delay(500);
   }
 }
 
